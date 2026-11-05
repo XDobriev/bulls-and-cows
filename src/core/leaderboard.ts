@@ -31,11 +31,17 @@ export const addScore = (
   return sortScores(updated).slice(0, maxItems);
 };
 
+const getLocalStorage = (): Storage | null => {
+  try {
+    return typeof window !== 'undefined' && window.localStorage ? window.localStorage : null;
+  } catch {
+    return null;
+  }
+};
+
 export const loadLeaderboard = (
   storageKey = STORAGE_KEY,
-  storage: Storage | null = typeof window !== 'undefined' && window.localStorage
-    ? window.localStorage
-    : null
+  storage: Storage | null = getLocalStorage()
 ): readonly ScoreEntry[] => {
   if (!storage) {
     return [];
@@ -49,7 +55,17 @@ export const loadLeaderboard = (
     if (!Array.isArray(parsed)) {
       return [];
     }
-    return sortScores(parsed);
+    const sanitized = parsed.filter(
+      (item): item is ScoreEntry =>
+        typeof item === 'object' &&
+        item !== null &&
+        typeof item.playerName === 'string' &&
+        typeof item.attempts === 'number' &&
+        Number.isFinite(item.attempts) &&
+        typeof item.durationMs === 'number' &&
+        Number.isFinite(item.durationMs)
+    );
+    return sortScores(sanitized);
   } catch {
     return [];
   }
@@ -58,9 +74,7 @@ export const loadLeaderboard = (
 export const saveLeaderboard = (
   scores: readonly ScoreEntry[],
   storageKey = STORAGE_KEY,
-  storage: Storage | null = typeof window !== 'undefined' && window.localStorage
-    ? window.localStorage
-    : null
+  storage: Storage | null = getLocalStorage()
 ): void => {
   if (!storage) {
     return;

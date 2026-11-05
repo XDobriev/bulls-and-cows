@@ -61,4 +61,14 @@ describe('generateSecret', () => {
     expect(() => generateSecret(2, 1)).toThrow();
     expect(() => generateSecret(2, 17)).toThrow();
   });
+
+  it('safely handles boundary RNG return values (1.0 or negative)', () => {
+    const secretMax = generateSecret(4, 10, () => 1.0);
+    expect(secretMax).toHaveLength(4);
+    expect(new Set(secretMax).size).toBe(4);
+
+    const secretMin = generateSecret(4, 10, () => -0.5);
+    expect(secretMin).toHaveLength(4);
+    expect(new Set(secretMin).size).toBe(4);
+  });
 });

@@ -8,8 +8,10 @@ const pickDigits = (
   if (needed === 0 || available.length === 0) {
     return [];
   }
-  const rand = Math.max(0, Math.min(0.999999999999999, rng()));
-  const index = Math.floor(rand * available.length);
+  const rawRand = rng();
+  const validRand = Number.isFinite(rawRand) ? Math.max(0, rawRand) : 0;
+  const rawIndex = Math.floor(validRand * available.length);
+  const index = Math.min(available.length - 1, Math.max(0, rawIndex));
   const chosen = available[index];
   const nextAvailable = available.filter((_, i) => i !== index);
   return [chosen, ...pickDigits(needed - 1, nextAvailable, rng)];

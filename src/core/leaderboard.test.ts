@@ -91,4 +91,30 @@ describe('leaderboard', () => {
     expect(loaded).toHaveLength(3);
     expect(loaded[0].playerName).toBe('Charlie');
   });
+
+  it('safely handles corrupted storage data or throwing storage', () => {
+    const corruptStorage = {
+      getItem: () => '{"invalid": json',
+      setItem: () => {},
+    } as unknown as Storage;
+    expect(loadLeaderboard('corrupt', corruptStorage)).toEqual([]);
+
+    const malformedStorage = {
+      getItem: () => JSON.stringify([{ attempts: 'not a number' }, null, { attempts: 1 }]),
+      setItem: () => {},
+    } as unknown as Storage;
+    expect(loadLeaderboard('malformed', malformedStorage)).toEqual([]);
+
+    const throwingStorage = {
+      getItem: () => {
+        throw new Error('Access denied');
+      },
+      setItem: () => {
+        throw new Error('Quota exceeded');
+      },
+    } as unknown as Storage;
+
+    expect(loadLeaderboard('key', throwingStorage)).toEqual([]);
+    expect(() => saveLeaderboard(sampleScores, 'key', throwingStorage)).not.toThrow();
+  });
 });

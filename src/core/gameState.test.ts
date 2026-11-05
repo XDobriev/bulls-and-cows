@@ -114,4 +114,16 @@ describe('gameState management', () => {
     expect(reset.secret).toBe('');
     expect(reset.settings).toEqual({ base: 8, length: 3 });
   });
+
+  it('rejects guesses and locks settings when game status is won', () => {
+    const initial = startGame(createInitialState(), () => '1234');
+    const wonState = submitGuess(initial, '1234').state;
+    expect(wonState.status).toBe('won');
+
+    const guessAfterWin = submitGuess(wonState, '5678');
+    expect(guessAfterWin.error).toBe('GAME_NOT_IN_PROGRESS');
+
+    const updateAttempt = updateSettings(wonState, { length: 3 });
+    expect(updateAttempt.settings.length).toBe(4);
+  });
 });
