@@ -1,12 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  createInitialState,
-  updateSettings,
-  startGame,
-  submitGuess,
-  resetGame,
-  GameState,
-} from './gameState';
+import { createInitialState, updateSettings, startGame, submitGuess, resetGame } from './gameState';
 
 describe('gameState management', () => {
   it('creates initial state with default settings', () => {
