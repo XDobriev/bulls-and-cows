@@ -7,6 +7,7 @@ interface VictoryModalProps {
   durationMs: number;
   onSaveScore: (playerName: string) => void;
   onPlayAgain: () => void;
+  onClose?: () => void;
 }
 
 export const createVictoryModal = ({
@@ -15,9 +16,24 @@ export const createVictoryModal = ({
   durationMs,
   onSaveScore,
   onPlayAgain,
+  onClose,
 }: VictoryModalProps): HTMLElement => {
   const overlay = el('div', { className: 'modal-overlay' });
   const dialog = el('div', { className: 'modal-dialog' });
+
+  if (onClose) {
+    const closeBtn = el('button', {
+      className: 'modal-close-btn',
+      text: '✕',
+      attributes: {
+        type: 'button',
+        title: 'Закрыть окно (просмотреть результат)',
+        'aria-label': 'Закрыть',
+      },
+      onClick: onClose,
+    });
+    dialog.appendChild(closeBtn);
+  }
 
   const icon = el('div', { className: 'modal-icon', text: '🎉' });
   dialog.appendChild(icon);
@@ -72,22 +88,31 @@ export const createVictoryModal = ({
   }) as HTMLInputElement;
   actions.appendChild(nameInput);
 
+  const triggerSave = (): void => {
+    if (!saved) {
+      const name = nameInput.value.trim() || 'Игрок';
+      onSaveScore(name);
+      saved = true;
+      saveBtn.textContent = '✅ Сохранено в рекорды!';
+      saveBtn.setAttribute('disabled', 'true');
+      nameInput.setAttribute('disabled', 'true');
+    }
+  };
+
+  nameInput.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      triggerSave();
+    }
+  });
+
   const saveBtn = el('button', {
     className: 'btn btn-primary',
     text: '💾 Сохранить рекорд',
     attributes: {
       type: 'button',
     },
-    onClick: () => {
-      if (!saved) {
-        const name = nameInput.value.trim() || 'Игрок';
-        onSaveScore(name);
-        saved = true;
-        saveBtn.textContent = '✅ Сохранено в рекорды!';
-        saveBtn.setAttribute('disabled', 'true');
-        nameInput.setAttribute('disabled', 'true');
-      }
-    },
+    onClick: triggerSave,
   });
   actions.appendChild(saveBtn);
 
@@ -103,6 +128,20 @@ export const createVictoryModal = ({
 
   dialog.appendChild(actions);
   overlay.appendChild(dialog);
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay && onClose) {
+      onClose();
+    }
+  });
+
+  const handleEsc = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape' && onClose) {
+      window.removeEventListener('keydown', handleEsc);
+      onClose();
+    }
+  };
+  window.addEventListener('keydown', handleEsc);
 
   return overlay;
 };

@@ -7,7 +7,13 @@ import {
   resetGame,
   GameSettings,
 } from '../core/gameState';
-import { ScoreEntry, loadLeaderboard, saveLeaderboard, addScore } from '../core/leaderboard';
+import {
+  ScoreEntry,
+  loadLeaderboard,
+  saveLeaderboard,
+  addScore,
+  formatDuration,
+} from '../core/leaderboard';
 import { el, clearElement } from './domUtils';
 import { createSettingsView } from './components/settingsView';
 import { createGameView } from './components/gameView';
@@ -19,6 +25,7 @@ export const initApp = (container: HTMLElement): void => {
   let state: GameState = createInitialState();
   let scores: readonly ScoreEntry[] = loadLeaderboard();
   let errorMessage: string | null = null;
+  let currentInputValue = '';
   let timerId: number | null = null;
   let elapsedMs = 0;
   let modalElement: HTMLElement | null = null;
@@ -71,13 +78,20 @@ export const initApp = (container: HTMLElement): void => {
 
   container.appendChild(appContainer);
 
+  const updateTimerDisplay = (): void => {
+    const timerElement = document.getElementById('game-timer-display');
+    if (timerElement) {
+      timerElement.textContent = `⏱️ ${formatDuration(elapsedMs)}`;
+    }
+  };
+
   const startTimer = (): void => {
     stopTimer();
     elapsedMs = 0;
     const startTime = Date.now();
     timerId = window.setInterval(() => {
       elapsedMs = Date.now() - startTime;
-      render();
+      updateTimerDisplay();
     }, 1000);
   };
 
@@ -97,6 +111,7 @@ export const initApp = (container: HTMLElement): void => {
   const handleStartGame = (): void => {
     state = startGame(state);
     errorMessage = null;
+    currentInputValue = '';
     startTimer();
     render();
   };
@@ -106,17 +121,20 @@ export const initApp = (container: HTMLElement): void => {
 
     if (result.error === 'DUPLICATE') {
       errorMessage = '⚠️ Эта комбинация уже проверялась ранее!';
+      currentInputValue = guess;
       render();
       return;
     }
 
     if (result.error === 'INVALID_INPUT') {
       errorMessage = `Введите ровно ${state.settings.length} уникальных символов системы ${state.settings.base}.`;
+      currentInputValue = guess;
       render();
       return;
     }
 
     errorMessage = null;
+    currentInputValue = '';
     state = result.state;
 
     if (result.isWin) {
@@ -135,6 +153,7 @@ export const initApp = (container: HTMLElement): void => {
     state = resetGame(state);
     elapsedMs = 0;
     errorMessage = null;
+    currentInputValue = '';
     render();
   };
 
@@ -170,6 +189,7 @@ export const initApp = (container: HTMLElement): void => {
       durationMs,
       onSaveScore: handleSaveScore,
       onPlayAgain: handleNewGame,
+      onClose: closeVictory,
     });
     document.body.appendChild(modalElement);
   };
@@ -197,6 +217,7 @@ export const initApp = (container: HTMLElement): void => {
         state,
         elapsedMs,
         errorMessage,
+        initialInputValue: currentInputValue,
         onGuessSubmit: handleGuessSubmit,
         onNewGame: handleNewGame,
       })

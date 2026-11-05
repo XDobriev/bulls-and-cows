@@ -24,7 +24,7 @@ export const createSettingsView = ({
   onUpdateSettings,
   onStartGame,
 }: SettingsViewProps): HTMLElement => {
-  const isPlaying = status === 'playing';
+  const isLocked = status !== 'idle';
 
   const card = el('div', { className: 'card settings-card' });
 
@@ -54,12 +54,12 @@ export const createSettingsView = ({
         title: `Алфавит: ${b.desc}`,
       },
       onClick: () => {
-        if (!isPlaying && settings.base !== b.value) {
+        if (!isLocked && settings.base !== b.value) {
           onUpdateSettings({ base: b.value });
         }
       },
     });
-    if (isPlaying) {
+    if (isLocked) {
       btn.setAttribute('disabled', 'true');
     }
     basePills.appendChild(btn);
@@ -84,7 +84,7 @@ export const createSettingsView = ({
 
   const lengthPills = el('div', { className: 'options-pill-group' });
   for (const len of LENGTHS) {
-    const isLenDisabled = isPlaying || (settings.base === 2 && len > 2);
+    const isLenDisabled = isLocked || (settings.base === 2 && len > 2);
     const btn = el('button', {
       className: `pill-button ${settings.length === len ? 'active' : ''}`,
       text: String(len),
@@ -92,7 +92,7 @@ export const createSettingsView = ({
         type: 'button',
       },
       onClick: () => {
-        if (!isPlaying && !isLenDisabled && settings.length !== len) {
+        if (!isLocked && !isLenDisabled && settings.length !== len) {
           onUpdateSettings({ length: len });
         }
       },
@@ -128,17 +128,17 @@ export const createSettingsView = ({
   // 4. Start game button
   const startBtn = el('button', {
     className: 'btn btn-primary btn-block',
-    text: isPlaying ? 'Раунд идёт...' : '🎮 Начать игру',
+    text: isLocked ? 'Раунд идёт...' : '🎮 Начать игру',
     attributes: {
       type: 'button',
     },
     onClick: () => {
-      if (!isPlaying) {
+      if (!isLocked) {
         onStartGame();
       }
     },
   });
-  if (isPlaying) {
+  if (isLocked) {
     startBtn.setAttribute('disabled', 'true');
   }
   group.appendChild(startBtn);

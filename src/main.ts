@@ -1,6 +1,10 @@
 import './style.css';
 import { initApp } from './ui/app';
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initApp(document.body);
+  });
+} else {
   initApp(document.body);
-});
+}

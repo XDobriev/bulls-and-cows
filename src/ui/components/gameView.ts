@@ -7,6 +7,7 @@ interface GameViewProps {
   state: GameState;
   elapsedMs: number;
   errorMessage: string | null;
+  initialInputValue?: string;
   onGuessSubmit: (guess: string) => void;
   onNewGame: () => void;
 }
@@ -15,6 +16,7 @@ export const createGameView = ({
   state,
   elapsedMs,
   errorMessage,
+  initialInputValue = '',
   onGuessSubmit,
   onNewGame,
 }: GameViewProps): HTMLElement => {
@@ -26,8 +28,6 @@ export const createGameView = ({
     text: '🎯 Игровое поле',
   });
   card.appendChild(title);
-
-  const isPlaying = state.status === 'playing';
 
   // Status Bar
   const statusBar = el('div', { className: 'game-status-bar' });
@@ -45,6 +45,7 @@ export const createGameView = ({
   statusBar.appendChild(attemptsCounter);
 
   const timerBadge = el('span', {
+    id: 'game-timer-display',
     className: 'timer-display',
     text: `⏱️ ${formatDuration(elapsedMs)}`,
   });
@@ -52,7 +53,29 @@ export const createGameView = ({
 
   card.appendChild(statusBar);
 
-  if (!isPlaying) {
+  if (state.status === 'won') {
+    const winBanner = el('div', { className: 'win-banner' });
+    winBanner.appendChild(el('div', { className: 'win-title', text: '🎉 Поздравляем, победа!' }));
+    winBanner.appendChild(
+      el('p', {
+        className: 'win-desc',
+        text: `Секретное число: ${state.secret}. Затрачено попыток: ${state.history.length}.`,
+      })
+    );
+    const playAgainBtn = el('button', {
+      className: 'btn btn-primary btn-block',
+      text: '🔄 Начать новую игру',
+      attributes: {
+        type: 'button',
+      },
+      onClick: onNewGame,
+    });
+    winBanner.appendChild(playAgainBtn);
+    card.appendChild(winBanner);
+    return card;
+  }
+
+  if (state.status !== 'playing') {
     const idleMsg = el('div', {
       className: 'history-empty',
       text: 'Настройте параметры выше и нажмите «Начать игру», чтобы компьютер загадал число.',
@@ -82,6 +105,7 @@ export const createGameView = ({
       spellcheck: 'false',
       maxlength: String(state.settings.length),
       placeholder: '•'.repeat(state.settings.length),
+      value: initialInputValue,
       autofocus: 'true',
     },
   }) as HTMLInputElement;
@@ -151,6 +175,9 @@ export const createGameView = ({
   // Auto focus input
   setTimeout(() => {
     input.focus();
+    if (initialInputValue) {
+      input.select();
+    }
   }, 50);
 
   return card;
