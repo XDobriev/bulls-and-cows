@@ -1,0 +1,86 @@
+# Pull Request: Bulls and Cows
+
+1. **Task**: [Bulls and Cows (RS School)](https://github.com/rolling-scopes-school/tasks/blob/master/fullstack-engineering/tasks/bulls-and-cows/README.md)
+2. **Screenshot**:
+
+   ![Bulls and Cows screenshot](https://raw.githubusercontent.com/XDobriev/bulls-and-cows/bulls-and-cows/screenshot.png)
+
+3. **Deploy**: [https://xdobriev.github.io/bulls-and-cows/](https://xdobriev.github.io/bulls-and-cows/)
+4. **Done**: 07.11.2026
+5. **Score**: 150 / 150
+6. **Документация**: [DESIGN.md](./DESIGN.md)
+
+---
+
+## Подтверждение порядка коммитов (TDD)
+
+Для всех 5 обязательных функций ядра соблюдён строгий порядок TDD (падающие тесты в отдельном коммите до коммита с реализацией):
+
+1. **`generateSecret`**:
+   - `test(core): add tests for generateSecret` (commit `68ab804`)
+   - `feat(core): implement generateSecret` (commit `064f4a4`)
+2. **`evaluateGuess`**:
+   - `test(core): add tests for evaluateGuess` (commit `2d1cdf7`)
+   - `feat(core): implement evaluateGuess` (commit `b06ce6f`)
+3. **`createDigitValidator`**:
+   - `test(core): add tests for createDigitValidator` (commit `8dac1b4`)
+   - `feat(core): implement createDigitValidator` (commit `2f828ce`)
+4. **`isValidGuess`**:
+   - `test(core): add tests for isValidGuess` (commit `fc3f1f6`)
+   - `feat(core): implement isValidGuess` (commit `2d365fd`)
+5. **`countPossibleSecrets`**:
+   - `test(core): add tests for countPossibleSecrets` (commit `f3bb99d`)
+   - `feat(core): implement countPossibleSecrets` (commit `9facb4c`)
+
+---
+
+## Чек-лист поведения
+
+- [x] Настройки длины (2–6) и системы счисления (bin/oct/dec/hex) доступны до старта и блокируются после
+- [x] При выборе двоичной системы недоступны (задизейблены или скрыты) все длины, кроме 2
+- [x] Поле ввода не принимает символы, недопустимые для выбранной системы счисления
+- [x] Ввод цифр hex в верхнем регистре (A–F) принимается наравне со строчными
+- [x] После каждой попытки появляется новая запись в истории с числом bulls/cows
+- [x] Повторный ввод уже использованной попытки не приводит к задвоению записи в истории (выводится предупреждение, история не изменяется)
+- [x] При угадывании секретного числа игра корректно завершается, засчитывается число попыток и время
+- [x] Результат попадает в таблицу рекордов, рекорды переживают перезагрузку страницы (сохранение в `localStorage`)
+- [x] «Новая игра» возвращает к экрану настроек без перезагрузки страницы
+
+---
+
+## Самооценка (150 / 150)
+
+### 1. Настройка проекта (20 / 20)
+
+- [x] TypeScript настроен и используется во всём проекте (+5)
+- [x] ESLint + Prettier настроены, скрипты `lint`/`format` работают (+5)
+- [x] Husky pre-commit запускает только `lint-staged` (без тестов) (+3)
+- [x] Husky pre-push запускает `npm test` и блокирует отправку красных тестов (+2)
+- [x] Тестовый раннер (Vitest) настроен, скрипт `test` работает (+5)
+
+### 2. TDD и тесты (30 / 30)
+
+- [x] Для каждой обязательной функции (`generateSecret`, `evaluateGuess`, `isValidGuess`, `createDigitValidator`, `countPossibleSecrets`) есть отдельный коммит с тестами до коммита с реализацией (+25)
+- [x] Тесты соответствуют принципам FIRST (быстрые, независимые, детерминированные, самопроверяющиеся) (+5)
+
+### 3. Функциональное программирование (50 / 50)
+
+- [x] Вся игровая логика — чистые функции без классов, не зависящие от DOM (+10)
+- [x] `generateSecret` принимает источник случайности параметром и протестирован с детерминированным `random` (+10)
+- [x] `evaluateGuess` реализован через методы массивов (`filter`, `reduce`), а не ручные циклы со счётчиками (+10)
+- [x] `createDigitValidator` — каррированная фабрика, используется минимум в двух местах (валидация попытки и фильтрация ввода в UI) (+10)
+- [x] `countPossibleSecrets` реализован рекурсивно и мемоизирован (+10)
+
+### 4. Документация DESIGN.md (20 / 20)
+
+- [x] Структуры данных и алгоритмы описаны конкретно, по функциям (+8)
+- [x] Big O для всех четырёх указанных функций с обоснованием (+8)
+- [x] Принципы чистого кода с указанием, где конкретно применены (+4)
+
+### 5. Игровая механика и интерфейс (30 / 30)
+
+- [x] Настройки (длина 2–6, система счисления bin/oct/dec/hex), блокировка после старта, ограничение двоичной системы длиной 2 (+8)
+- [x] История попыток с корректными bulls/cows, иммутабельно пополняется (+8)
+- [x] Завершение игры, подсчёт попыток и времени (+6)
+- [x] Таблица рекордов в localStorage, переживает перезагрузку (+6)
+- [x] «Новая игра» без перезагрузки страницы (+2)
