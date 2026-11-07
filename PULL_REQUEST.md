@@ -1,10 +1,14 @@
 # Pull Request: Bulls and Cows
 
-## Ссылки
+1. **Task**: [Bulls and Cows (RS School)](https://github.com/rolling-scopes-school/tasks/blob/master/fullstack-engineering/tasks/bulls-and-cows/README.md)
+2. **Screenshot**:
 
-- **Задание**: [Bulls and Cows (RS School)](https://github.com/rolling-scopes-school/tasks/blob/master/fullstack-engineering/tasks/bulls-and-cows/README.md)
-- **Деплой**: https://xdobriev.github.io/bulls-and-cows/ (либо актуальная ссылка на GitHub Pages вашего репозитория)
-- **Документация**: [DESIGN.md](./DESIGN.md)
+   ![Bulls and Cows screenshot](https://raw.githubusercontent.com/XDobriev/bulls-and-cows/bulls-and-cows/screenshot.png)
+
+3. **Deploy**: [https://xdobriev.github.io/bulls-and-cows/](https://xdobriev.github.io/bulls-and-cows/)
+4. **Done**: 07.11.2026
+5. **Score**: 150 / 150
+6. **Документация**: [DESIGN.md](./DESIGN.md)
 
 ---
 
